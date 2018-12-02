@@ -1,0 +1,30 @@
+{
+  "name": "hotelreservationbackend",
+  "version": "1.0.0",
+  "description": "Hotel Reservation System Using Reactjs and Nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chanstag/HotelReservationBackend.git"
+  },
+  "keywords": [
+    "Nodejs",
+    "Reactjs",
+    "Database"
+  ],
+  "author": "Chandler Staggs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chanstag/HotelReservationBackend/issues"
+  },
+  "homepage": "https://github.com/chanstag/HotelReservationBackend#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-generator": "^4.16.0",
+    "moment": "^2.22.2",
+    "mysql": "^2.16.0"
+  }
+}
