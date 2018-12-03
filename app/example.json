@@ -1,0 +1,9 @@
+{
+    'fname':"",
+    'lname':"",
+    'bdate':"",
+    'pref_smoking': 0 or 1,
+    'pref_pets': 0 or 1,
+    'email':'',
+    'password':''
+}

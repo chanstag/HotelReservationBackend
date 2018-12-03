@@ -16,7 +16,7 @@ var app = express();
 const port = 3002
 
 app.use(logger('dev'));
-app.use(cors({allowedHeaders:['Authorization']}));
+app.use(cors({allowedHeaders:['Authorization'], credentials:true}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

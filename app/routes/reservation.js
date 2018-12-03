@@ -10,7 +10,7 @@ const moment = require('moment');
 
 
 router.post('/makeReservation', function(req, res){
-    console.log(req.body)
+    console.log("req.body", req.body)
     if(objIsEmpty(req.body)){
         return res.json({'status': false, 'message': 3})
     }
@@ -28,21 +28,40 @@ router.post('/makeReservation', function(req, res){
 
     connection.connect();
 
+    let constraintsql = " SELECT * FROM Reservation WHERE (? >= reserve_date  AND  ? <= check_out_date  AND ? >= reserve_date  AND ? <= check_out_date) OR ( ? <= reserve_date AND ? <= check_out_date AND ? >= reserve_date AND ? >= check_out_date) AND roomNo = ?;";
     let sql = "INSERT INTO Reservation(cust_id, roomNo, reserve_date, check_out_date) VALUES ((SELECT cust_id FROM Customer WHERE email = ?), ?, ?, ?)"
     //Ideally would do a check on input parameters to ensure of correct type and format
-    connection.query(sql, [req.body.email, req.body.roomNo, req.body.reserve_date, req.body.check_out_date],  function (error, results, fields) {
-        if (error) {
-            res.json({'status':false, 'message': 12})
-            throw error;
+    connection.query(constraintsql, [moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), req.body.roomNo], function(error, results, fields){
+        if(error){
+            console.log(error);
+            return res.json({'status': false, 'message': 10});
         }
-        if(results.affectedRows > 0){
-            res.json({'status': true, 'message': results});
+        console.log("results", results);
+        if( typeof(results) == "undefined" || results.length > 0){
+            console.log("results", results);
+            return res.json({'status': false, 'message': 10});
         }
-        else{
-            res.json({'status': false, 'message': 12});
-        }
-        
-    });
+        connection.query(sql, [req.body.email, req.body.roomNo, req.body.reserve_date, req.body.check_out_date],  function (error, results, fields) {
+            if (error) {
+		console.log(error)
+		if(error.code == 'ER_DUP_ENTRY'){
+			
+                	return res.json({'status':false, 'message': 13});
+		}
+                res.json({'status':false, 'message': 12});
+                return;
+            }
+            if(results.affectedRows > 0){
+                
+                res.json({'status': true, 'message': results});
+            }
+            else{
+                res.json({'status': false, 'message': 12});
+            }
+            
+        });
+    })
+    
 });
 
 //this is a customer API endpoint
@@ -67,7 +86,9 @@ router.post('/', function(req, res){
 
     let sql = 'SELECT roomNo, check_in_date, reserve_date, check_out_date from Reservation WHERE Reservation.cust_id = ?'
     connection.query(sql, [req.body.id],  function (error, results, fields) {
-    if (error) throw error;
+    if (error) {
+        res.json({'status': false, 'message': 9});
+    }
         console.log('The solution is: ', results);
         res.json({'status':true, 'message':results});
     });
