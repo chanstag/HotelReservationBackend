@@ -31,7 +31,9 @@ router.post('/makeReservation', function(req, res){
     let constraintsql = " SELECT * FROM Reservation WHERE (? >= reserve_date  AND  ? <= check_out_date  AND ? >= reserve_date  AND ? <= check_out_date) OR ( ? <= reserve_date AND ? <= check_out_date AND ? >= reserve_date AND ? >= check_out_date) AND roomNo = ?;";
     let sql = "INSERT INTO Reservation(cust_id, roomNo, reserve_date, check_out_date) VALUES ((SELECT cust_id FROM Customer WHERE email = ?), ?, ?, ?)"
     //Ideally would do a check on input parameters to ensure of correct type and format
-    connection.query(constraintsql, [moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.reserve_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), moment(req.body.check_out_date).format("YYYY-MM-DD"), req.body.roomNo], function(error, results, fields){
+	console.log("date: ", new moment(req.body.reserve_date).format("YYYY-MM-DD"))
+	reserDate = 
+    connection.query(constraintsql, [new moment(req.body.reserve_date).format("YYYY-MM-DD"), new moment(req.body.reserve_date).format("YYYY-MM-DD"),new moment(req.body.check_out_date).format("YYYY-MM-DD"),new moment(req.body.check_out_date).format("YYYY-MM-DD"),new moment(req.body.reserve_date).format("YYYY-MM-DD"),new moment(req.body.reserve_date).format("YYYY-MM-DD"),new moment(req.body.check_out_date).format("YYYY-MM-DD"),new moment(req.body.check_out_date).format("YYYY-MM-DD"), req.body.roomNo], function(error, results, fields){
         if(error){
             console.log(error);
             return res.json({'status': false, 'message': 10});
@@ -41,11 +43,12 @@ router.post('/makeReservation', function(req, res){
             console.log("results", results);
             return res.json({'status': false, 'message': 10});
         }
-        connection.query(sql, [req.body.email, req.body.roomNo, req.body.reserve_date, req.body.check_out_date],  function (error, results, fields) {
+	console.log(req.body.email, req.body.roomNo, req.body.reserve_date, req.body.check_out_date);
+        connection.query(sql, [req.body.email, req.body.roomNo, new moment(req.body.reserve_date).format("YYYY-MM-DD"), new moment(req.body.check_out_date).format("YYYY-MM_DD")],  function (error, results, fields) {
             if (error) {
 		console.log(error)
 		if(error.code == 'ER_DUP_ENTRY'){
-			
+			console.log(error);	
                 	return res.json({'status':false, 'message': 13});
 		}
                 res.json({'status':false, 'message': 12});
